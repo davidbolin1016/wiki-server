@@ -1,5 +1,6 @@
 'use strict';
 const regex = /(?=.*[a-zA-Z])(?=.*[0-9])[\S]+/;
+const bcrypt = require('bcryptjs');
 
 const UsersService = {
   validatePassword(password) {
@@ -22,6 +23,25 @@ const UsersService = {
     if (!regex.test(password)) {
       return 'Password must contain at least one letter and one number';
     }
-  }
+  },
+
+  hasUserWithUserName(db, username) {
+    return db('users')
+      .where({ username })
+      .first()
+      .then(user => !!user);
+  },
+
+  hashPassword(password) {
+    return bcrypt.hash(password, 12);
+  },
+
+  addUser(db, newUser) {
+    return db
+      .insert(newUser)
+      .into('users')
+      .returning('*')
+      .then(([user]) => user);
+  },
 };
 module.exports = UsersService;

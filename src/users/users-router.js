@@ -7,7 +7,7 @@ const jsonBodyParser = express.json();
 
 usersRouter
   .post('/', jsonBodyParser, (req, res, next) => {
-    const { password } = req.body;
+    const { password, username } = req.body;
     
     const passwordError = UsersService.validatePassword(password);
 
@@ -15,7 +15,25 @@ usersRouter
       return res.status(400).json({error: passwordError});
     }
 
-    return res.status(201).end();
+    UsersService.hasUserWithUserName(req.app.get('db'), username)
+      .then(hasUserWithUserName => {
+        if (hasUserWithUserName) {
+          return res.status(400).json({error: 'Username already taken'});
+        }
+
+        return UsersService.hashPassword(password)
+          .then(hashedPassword => {
+            const newUser = {
+              username,
+              hashed_password: hashedPassword,
+              date_created: 'now()'
+            };
+  
+            return UsersService.addUser(req.app.get('db'), newUser)
+              .then(() => res.status(201).end());      
+          });
+      })
+      .catch(next);
   });
 
 
