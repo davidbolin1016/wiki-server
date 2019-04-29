@@ -9,6 +9,7 @@ const { NODE_ENV } = require('./config');
 const app = express();
 
 const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
+const usersRouter = require('./users/users-router');
 
 app.use(morgan(morganOption));
 app.use(helmet());
@@ -17,6 +18,8 @@ app.use(cors());
 app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
+
+app.use('/api/users', usersRouter);
 
 // eslint-disable-next-line no-unused-vars
 app.use(function errorHandler(error, req, res, next) {
