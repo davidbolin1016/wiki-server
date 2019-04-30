@@ -27,6 +27,10 @@ function requireAuth(req, res, next) {
         PagesService.checkOwner(req.app.get('db'), desiredPage)
           .then(result => {
 
+            if (!result[0]) {
+              return res.status(404).json({ error: 'Page does not exist'});
+            }
+
             if (user.id !== result[0].user_id) {
               return res.status(401).json({ error: 'Unauthorized request'});
             }

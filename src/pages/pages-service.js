@@ -22,6 +22,17 @@ const PagesService = {
       .select('user_id')
       .from('pages')
       .where({ id });
+  },
+  findHomePage(db, user_id) {
+    return db
+      .select('home_page_id')
+      .from('home_pages')
+      .where({ user_id });
+  },
+  getPage(db, id) {
+    return db
+      .from('pages')
+      .where( {id: id} );
   }
 };
 

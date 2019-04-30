@@ -2,6 +2,7 @@
 const express = require('express');
 const AuthService = require('./auth-service');
 const requireAuth = require('../middleware/jwt-auth').requireAuth;
+const PagesService = require('../pages/pages-service');
 const authRouter = express.Router();
 const jsonBodyParser = express.json();
 
@@ -25,21 +26,26 @@ authRouter
       .then(dbUser => {
         if(!dbUser) {
           return res.status(400).json({
-            error: 'Incorrect user_name or password'
+            error: 'Incorrect username or password'
           });
         }
         return AuthService.comparePasswords(loginUser.password, dbUser.hashed_password)
           .then(compareMatch => {
             if (!compareMatch)
               return res.status(400).json({
-                error: 'Incorrect user_name or password',
+                error: 'Incorrect username or password',
               });
 
             const sub = dbUser.username;
             const payload = { user_id: dbUser.id };
-            res.send({
-              authToken: AuthService.createJwt(sub, payload),
-            });
+            PagesService.findHomePage(req.app.get('db'), dbUser.id)
+              .then(homepage => {
+                return res.send({
+                  authToken: AuthService.createJwt(sub, payload),
+                  home_page: homepage[0].home_page_id
+                });
+              });
+           
           }); 
       })
       .catch(next);
