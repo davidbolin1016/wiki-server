@@ -10,7 +10,7 @@ authRouter
   .post('/login', jsonBodyParser, (req, res, next) => {
     const { username, password } = req.body;
     const loginUser = { username, password };
-    console.log('received', username, password);
+  
     for ( const [key, value] of Object.entries(loginUser)) {
       // eslint-disable-next-line eqeqeq
       if (value == null)
@@ -42,7 +42,7 @@ authRouter
               .then(homepage => {
                 return res.send({
                   authToken: AuthService.createJwt(sub, payload),
-                  home_page: homepage[0].home_page_id
+                  homepage: homepage[0].home_page_id
                 });
               });
            

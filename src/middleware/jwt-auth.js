@@ -24,20 +24,25 @@ function requireAuth(req, res, next) {
           return res.status(401).json({ error: 'Unauthorized request'});
         }
 
-        PagesService.checkOwner(req.app.get('db'), desiredPage)
-          .then(result => {
+        if (desiredPage) {
+          PagesService.checkOwner(req.app.get('db'), desiredPage)
+            .then(result => {
 
-            if (!result[0]) {
-              return res.status(404).json({ error: 'Page does not exist'});
-            }
+              if (!result[0]) {
+                return res.status(404).json({ error: 'Page does not exist'});
+              }
 
-            if (user.id !== result[0].user_id) {
-              return res.status(401).json({ error: 'Unauthorized request'});
-            }
+              if (user.id !== result[0].user_id) {
+                return res.status(401).json({ error: 'Unauthorized request'});
+              }
             
-            req.user = user;
-            next();
-          });
+              req.user = user;
+              next();
+            });
+        } else {
+          req.user = user;
+          next();
+        }
       })
       .catch(err => {
         // eslint-disable-next-line no-console
