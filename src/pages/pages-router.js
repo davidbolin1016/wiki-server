@@ -31,6 +31,12 @@ pagesRouter
       .then(page => {
         return res.status(200).json(page);
       });
+  })
+  .delete((req, res, next) => {
+    PagesService.deletePage(req.app.get('db'), req.params.page_id)
+      .then(() => {
+        return res.status(204).end();
+      });
   });
   
 
