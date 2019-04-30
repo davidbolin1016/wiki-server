@@ -16,6 +16,12 @@ const PagesService = {
       .into('home_pages')
       .returning('*')
       .then(([entry]) => entry);
+  },
+  checkOwner(db, id) {
+    return db
+      .select('user_id')
+      .from('pages')
+      .where({ id });
   }
 };
 

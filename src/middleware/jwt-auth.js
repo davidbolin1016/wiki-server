@@ -1,9 +1,11 @@
 'use strict';
 const AuthService = require('../auth/auth-service');
+const PagesService = require('../pages/pages-service');
 
 function requireAuth(req, res, next) {
   const authToken = req.get('Authorization') || '';
-
+  const desiredPage = req.params.page_id;
+  
   let bearerToken;
   if (!authToken.toLowerCase().startsWith('bearer ')) {
     return res.status(401).json({ error: 'Missing bearer token' });
@@ -21,8 +23,17 @@ function requireAuth(req, res, next) {
         if (!user) {
           return res.status(401).json({ error: 'Unauthorized request'});
         }
-        req.user = user;
-        next();
+
+        PagesService.checkOwner(req.app.get('db'), desiredPage)
+          .then(result => {
+
+            if (user.id !== result[0].user_id) {
+              return res.status(401).json({ error: 'Unauthorized request'});
+            }
+            
+            req.user = user;
+            next();
+          });
       })
       .catch(err => {
         // eslint-disable-next-line no-console
