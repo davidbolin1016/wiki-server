@@ -45,7 +45,14 @@ const PagesService = {
       .from('pages')
       .where( {id} )
       .del();
+  },
+  updatePage(db, id, updatedPage) {
+    return db
+      .from('pages')
+      .where({id})
+      .update(updatedPage);
   }
+
 };
 
 module.exports = PagesService;

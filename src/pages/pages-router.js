@@ -33,7 +33,13 @@ pagesRouter
       });
   })
   .delete((req, res, next) => {
-    PagesService.deletePage(req.app.get('db'), req.params.page_id)
+    PagesService.deletePage(req.app.get('db'), req.params.page_id, req.app.body)
+      .then(() => {
+        return res.status(204).end();
+      });
+  })
+  .patch(jsonBodyParser, (req, res, next) => {
+    PagesService.updatePage(req.app.get('db'), req.params.page_id, req.body)
       .then(() => {
         return res.status(204).end();
       });
