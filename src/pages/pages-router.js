@@ -15,6 +15,12 @@ pagesRouter
       .then((page) => {
         res.status(201).json({page_id: page.id});
       });
+  })
+  .get((req, res, next) => {
+    PagesService.getPageList(req.app.get('db'), req.user.id)
+      .then(list => {
+        return res.status(200).json(list);
+      });
   });
 
 pagesRouter

@@ -36,7 +36,7 @@ const PagesService = {
   },
   getPageList(db, user_id) {
     return db
-      .select('id, page_name, date_created, date_modified')
+      .select('id', 'page_name', 'date_created', 'date_modified')
       .from('pages')
       .where( {user_id} );
   }
