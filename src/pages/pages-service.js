@@ -39,6 +39,12 @@ const PagesService = {
       .select('id', 'page_name', 'date_created', 'date_modified')
       .from('pages')
       .where( {user_id} );
+  },
+  deletePage(db, id) {
+    return db
+      .from('pages')
+      .where( {id} )
+      .del();
   }
 };
 
