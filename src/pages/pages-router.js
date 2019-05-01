@@ -39,7 +39,20 @@ pagesRouter
       });
   })
   .patch(jsonBodyParser, (req, res, next) => {
-    PagesService.updatePage(req.app.get('db'), req.params.page_id, req.body)
+    const {page_name, page_content} = req.body;
+    const newObj = {};
+
+    if (page_name) {
+      newObj.page_name = page_name;
+    } 
+
+    if (page_content) {
+      newObj.page_content = page_content;
+    }
+
+    newObj.date_modified = new Date();
+
+    PagesService.updatePage(req.app.get('db'), req.params.page_id, newObj)
       .then(() => {
         return res.status(204).end();
       });
