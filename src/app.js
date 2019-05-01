@@ -14,7 +14,7 @@ const authRouter = require('./auth/auth-router');
 const pagesRouter = require('./pages/pages-router');
 
 app.use(morgan(morganOption));
-// app.use(helmet());
+app.use(helmet());
 app.use(cors());
 
 app.get('/', (req, res) => {
