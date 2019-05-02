@@ -1,4 +1,5 @@
 'use strict';
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
@@ -24,12 +25,17 @@ const AuthService = {
       algorithms: ['HS256']
     });
   },
-  parseBasicToken(token) {
-    return Buffer
-      .from(token, 'base64')
-      .toString()
-      .split(':');
-  },
+  whoamI(db, token) {
+    const payload = this.verifyJwt(token);
+    return db
+      .select('home_page_id')
+      .from('home_pages')
+      .where({ user_id: payload.user_id })
+      .then(result => { return {
+        home_page_id: result[0].home_page_id,
+        username: payload.sub
+      };});
+  }
 };
 
 module.exports = AuthService;

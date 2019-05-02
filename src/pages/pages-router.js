@@ -4,6 +4,7 @@ const { requireAuth } = require('../middleware/jwt-auth');
 const pagesRouter = express.Router();
 const jsonBodyParser = express.json();
 const PagesService = require('./pages-service');
+const LinkService = require('./pages-links');
 
 pagesRouter
   .route('/')
@@ -11,10 +12,39 @@ pagesRouter
   .post(jsonBodyParser, (req, res, next) => {
     const newPage = req.body;
     newPage.user_id = req.user.id;
-    PagesService.addPage(req.app.get('db'), newPage)
-      .then((page) => {
-        res.status(201).json({page_id: page.id});
+
+    if (!newPage.page_name) {
+      return res.status(400).json({
+        error: 'Page title is required'
       });
+    } 
+
+    // check content for other page titles in order to add links
+    PagesService.getPageList(req.app.get('db'), req.user.id)
+      .then(list => {
+        newPage.page_content = LinkService.createMultipleLinks(newPage.page_content, list);
+        // create new page
+        PagesService.addPage(req.app.get('db'), newPage)
+          .then((page) => {
+            return res.status(201).json({page_id: page.id});
+          });
+      });
+  
+    // check for title in other page content in order to add links
+    // PagesService.getPageList(req.app.get('db'), req.user.id)
+    //   .then(list => {
+    //     list.forEach(otherPage => {
+    //       if (page.id !== otherPage.id) {
+    //         PagesService.getPage(req.app.get('db'), otherPage.id)
+    //           .then(pageWithContent => {
+    //             const updatedContent = LinkService.createLinks(pageWithContent.page_content, page);
+    //             if (updatedContent !== pageWithContent.page_content) {
+    //               PagesService.updatePage(req.app.get('db'), otherPage.id, {page_content: updatedContent})
+    //                 .then(
+               
+               
+                    
+            
   })
   .get((req, res, next) => {
     PagesService.getPageList(req.app.get('db'), req.user.id)

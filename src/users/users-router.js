@@ -2,9 +2,11 @@
 const express = require('express');
 const UsersService = require('./users-service');
 const PagesService = require('../pages/pages-service');
-
+const AuthService = require('../auth/auth-service');
 const usersRouter = express.Router();
 const jsonBodyParser = express.json();
+
+const requireAuth = require('../middleware/jwt-auth').requireAuth;
 
 usersRouter
   .post('/', jsonBodyParser, (req, res, next) => {
@@ -53,6 +55,13 @@ usersRouter
           });
       })
       .catch(next);
+  })
+  .get('/', requireAuth, (req, res, next) => {
+    const authToken = req.get('Authorization');
+    const bearerToken = authToken.slice(7, authToken.length);
+    
+    return AuthService.whoamI(req.app.get('db'), bearerToken)
+      .then(user => res.status(200).json(user));
   });
 
 
