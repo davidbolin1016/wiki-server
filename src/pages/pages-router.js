@@ -61,8 +61,6 @@ pagesRouter
           return res.status(200).json(list);
         });
     }
-    
-
   });
 
 pagesRouter
