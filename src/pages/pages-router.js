@@ -73,7 +73,9 @@ pagesRouter
   })
   .patch(jsonBodyParser, (req, res, next) => {
     const {page_name, page_content} = req.body;
-    const newObj = {};
+    const newObj = {
+      id: req.params.page_id
+    };
 
     if (page_name) {
       newObj.page_name = page_name;
@@ -85,14 +87,33 @@ pagesRouter
 
     newObj.date_modified = new Date();
 
-    // will create updated page with links but not implement just yet
-
     PagesService.getPageList(req.app.get('db'), req.user.id)
       .then(list => {
         newObj.page_content = LinkService.createMultipleLinks(newObj.page_content, list);
         
         PagesService.updatePage(req.app.get('db'), req.params.page_id, newObj)
           .then(() => {
+            // possibly breaking code follows
+            PagesService.getFullPages(req.app.get('db'), req.user.id)
+              .then(list => {
+                const contentUpdates = list.map(fullPage => {
+                  if (fullPage.id === req.params.page_id) {
+                    return page.page_content;
+                  }
+                  const newContent = LinkService.createLinks(fullPage.page_content, newObj);
+
+                  if (newContent === fullPage.page_content) {
+                    return fullPage.page_content;
+                  }
+
+                  return PagesService.updatePage(req.app.get('db'), fullPage.id, {page_content: newContent});
+                });
+                Promise.all(contentUpdates)
+                  .then(() => {
+                    return res.status(204).end();
+                  });
+              });
+            // end of possibly breaking code
             return res.status(204).end();
           });
       });
