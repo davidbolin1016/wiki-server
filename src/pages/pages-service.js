@@ -51,6 +51,12 @@ const PagesService = {
       .from('pages')
       .where({id})
       .update(updatedPage);
+  },
+  getFullPages(db, user_id) {
+    return db
+      .select('*')
+      .from('pages')
+      .where( {user_id} );
   }
 
 };

@@ -26,25 +26,28 @@ pagesRouter
         // create new page
         PagesService.addPage(req.app.get('db'), newPage)
           .then((page) => {
-            return res.status(201).json({page_id: page.id});
+            // check for new title in previous page content
+            PagesService.getFullPages(req.app.get('db'), req.user.id)
+              .then(list => {
+                const contentUpdates = list.map(fullPage => {
+                  if (fullPage.id === page.id) {
+                    return page.page_content;
+                  }
+                  const newContent = LinkService.createLinks(fullPage.page_content, page);
+
+                  if (newContent === fullPage.page_content) {
+                    return fullPage.page_content;
+                  }
+
+                  return PagesService.updatePage(req.app.get('db'), fullPage.id, {page_content: newContent});
+                });
+                Promise.all(contentUpdates)
+                  .then(() => {
+                    return res.status(201).json({page_id: page.id});
+                  });
+              });
           });
-      });
-  
-    // check for title in other page content in order to add links
-    // PagesService.getPageList(req.app.get('db'), req.user.id)
-    //   .then(list => {
-    //     list.forEach(otherPage => {
-    //       if (page.id !== otherPage.id) {
-    //         PagesService.getPage(req.app.get('db'), otherPage.id)
-    //           .then(pageWithContent => {
-    //             const updatedContent = LinkService.createLinks(pageWithContent.page_content, page);
-    //             if (updatedContent !== pageWithContent.page_content) {
-    //               PagesService.updatePage(req.app.get('db'), otherPage.id, {page_content: updatedContent})
-    //                 .then(
-               
-               
-                    
-            
+      });          
   })
   .get((req, res, next) => {
     PagesService.getPageList(req.app.get('db'), req.user.id)
