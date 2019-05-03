@@ -82,9 +82,16 @@ pagesRouter
 
     newObj.date_modified = new Date();
 
-    PagesService.updatePage(req.app.get('db'), req.params.page_id, newObj)
-      .then(() => {
-        return res.status(204).end();
+    // will create updated page with links but not implement just yet
+
+    PagesService.getPageList(req.app.get('db'), req.user.id)
+      .then(list => {
+        newObj.page_content = LinkService.createMultipleLinks(newObj.page_content, list);
+        
+        PagesService.updatePage(req.app.get('db'), req.params.page_id, newObj)
+          .then(() => {
+            return res.status(204).end();
+          });
       });
   });
   
