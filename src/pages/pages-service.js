@@ -57,6 +57,13 @@ const PagesService = {
       .select('*')
       .from('pages')
       .where( {user_id} );
+  },
+  getSearchedList(db, user_id, searchTerm) {
+    return db
+      .select('id', 'page_name', 'date_created', 'date_modified')
+      .from('pages')
+      .where( {user_id} )
+      .where('page_content', 'ilike', `%${searchTerm}%`); 
   }
 
 };

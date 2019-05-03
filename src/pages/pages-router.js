@@ -50,10 +50,19 @@ pagesRouter
       });          
   })
   .get((req, res, next) => {
-    PagesService.getPageList(req.app.get('db'), req.user.id)
-      .then(list => {
-        return res.status(200).json(list);
-      });
+    if (!req.query.searchTerm) {
+      PagesService.getPageList(req.app.get('db'), req.user.id)
+        .then(list => {
+          return res.status(200).json(list);
+        });
+    } else {
+      PagesService.getSearchedList(req.app.get('db'), req.user.id, req.query.searchTerm)
+        .then(list => {
+          return res.status(200).json(list);
+        });
+    }
+    
+
   });
 
 pagesRouter
