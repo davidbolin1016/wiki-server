@@ -9,7 +9,7 @@ function makeUsersArray() {
       id: 1,
       username: 'testuser1',
       password: 'password1',
-      date_created: '2019-05-02T16:28:32.615Z'
+      date_created: '2019-05-02T16:28:32.615Z',
     },
 
     {
@@ -29,14 +29,15 @@ function makePagesArray(users) {
       page_name: 'Personal Home Page',
       page_content: 'Create your personal home page here.',
       date_created: users[0].date_created,
-      date_modified: users[0].date_modified
+      date_modified: users[0].date_created
     },
     {
       id: 2,
       user_id: users[0].id,
       page_name: 'New Page!',
       page_content: 'I just wrote some stuff',
-      date_created: '2019-05-03T16:29:35.615Z'
+      date_created: '2019-05-03T16:29:35.615Z',
+      date_modified: '2019-05-03T16:29:35.615Z'
     },
     {
       id: 3,

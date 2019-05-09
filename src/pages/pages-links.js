@@ -7,6 +7,10 @@ const LinkService = {
       return content;
     }
     
+    if (!otherPage.page_name) {
+      return content;
+    }
+
     const exclusions = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ<>';
     const name = otherPage.page_name;
     const index = content.toLowerCase().indexOf(otherPage.page_name.toLowerCase());
