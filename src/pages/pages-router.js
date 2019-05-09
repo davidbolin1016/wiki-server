@@ -47,19 +47,22 @@ pagesRouter
                   });
               });
           });
-      });          
+      })
+      .catch(next);          
   })
   .get((req, res, next) => {
     if (!req.query.searchTerm) {
       PagesService.getPageList(req.app.get('db'), req.user.id)
         .then(list => {
           return res.status(200).json(list);
-        });
+        })
+        .catch(next);
     } else {
       PagesService.getSearchedList(req.app.get('db'), req.user.id, req.query.searchTerm)
         .then(list => {
           return res.status(200).json(list);
-        });
+        })
+        .catch(next);
     }
   });
 
@@ -70,13 +73,15 @@ pagesRouter
     PagesService.getPage(req.app.get('db'), req.params.page_id)
       .then(page => {
         return res.status(200).json(page);
-      });
+      })
+      .catch(next);
   })
   .delete((req, res, next) => {
     PagesService.deletePage(req.app.get('db'), req.params.page_id, req.app.body)
       .then(() => {
         return res.status(204).end();
-      });
+      })
+      .catch(next);
   })
   .patch(jsonBodyParser, (req, res, next) => {
     const {page_name, page_content} = req.body;
@@ -120,7 +125,8 @@ pagesRouter
                   });
               });
           });
-      });
+      })
+      .catch(next);
   });
   
 

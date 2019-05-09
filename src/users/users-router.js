@@ -18,6 +18,10 @@ usersRouter
       return res.status(400).json({error: passwordError});
     }
 
+    if (!username) {
+      return res.status(400).json({error: 'Missing \'username\' in request body'});
+    }
+
     UsersService.hasUserWithUserName(req.app.get('db'), username)
       .then(hasUserWithUserName => {
         if (hasUserWithUserName) {
@@ -56,12 +60,15 @@ usersRouter
       })
       .catch(next);
   })
+
+  // if client sends a "GET" request to /api/users with a JWT token they will get back their username and home page id
   .get('/', requireAuth, (req, res, next) => {
     const authToken = req.get('Authorization');
     const bearerToken = authToken.slice(7, authToken.length);
     
     return AuthService.whoamI(req.app.get('db'), bearerToken)
-      .then(user => res.status(200).json(user));
+      .then(user => res.status(200).json(user))
+      .catch(next);
   });
 
 

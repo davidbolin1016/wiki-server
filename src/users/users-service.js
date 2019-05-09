@@ -4,6 +4,10 @@ const bcrypt = require('bcryptjs');
 
 const UsersService = {
   validatePassword(password) {
+    if (!password) {
+      return 'Missing \'password\' in request body';
+    }
+
     if (password.length < 8) {
       return 'Password must be at least 8 characters';
     }
