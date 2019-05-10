@@ -1,26 +1,43 @@
-# Express Boilerplate!
+# Automated Personal Wiki - Server
 
-This is a boilerplate project used for starting new projects!
+## Summary
 
-## Set up
+This is an Express server for my [Automated Personal Wiki](https://github.com/davidbolin1016/wiki-client) and a general description may be found there.
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+## API documentation
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+### POST /api/login
 
-## Scripts
+For user login. Requires a body with "username" and "password" as keys with appropriate string values.
 
-Start the application `npm start`
+Invalid login will receive a 400 response and an error message describing the problem.
 
-Start nodemon for the application `npm run dev`
+Valid login will receive a 200 response with a body containing "authToken" with a jwt token as well as a "homepage" with the id of the user's personal homepage. 
 
-Run the tests `npm test`
+### POST /api/refresh
 
-## Deploying
+Returns a refreshed jwt token.
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+### POST /api/pages
+
+For submitting a new page. Requires a body with "page_name" and "page_content" as strings. A valid submission will receive a 201 response with a body containing "page_id" with the numerical id for the new page.
+
+### GET /api/pages/:page_id
+
+For retrieving a particular page. Returns page with all attributes, namely: "id", "user_id", "page_name", "page_content", "date_created", and "date_modified". This will return 401 unauthorized if the user requests a page that does not belong to them.
+
+### DELETE /api/pages/:page_id
+
+For deleting a page. Returns 204 if successful, 401 unauthorized if page does not belong to user.
+
+### PATCH /api/pages/:page_id
+
+For updating a page. Requires a body with page_name, page_content, or both. This will automatically update "date_modified".
+
+### POST /api/users
+
+For creating a new user. Requires a body with "username" and "password" as strings. The password must have both letters and numbers. Will return 400 with an error message if username is taken, one of the fields is missing, or the password is invalid.
+
+### GET /api/users
+
+For retrieving current username and homepage id using a valid jwt token, mainly in order for the client to refresh state if the browser page is reloaded. Response body contains "home_page_id" (a number) and "username".
