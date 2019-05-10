@@ -25,6 +25,10 @@ function requireAuth(req, res, next) {
         }
 
         if (desiredPage) {
+          const idVal = Number(desiredPage);
+          if (!Number.isInteger(idVal)) {
+            return res.status(400).json({ error: 'Page id must be a number'});
+          }
           PagesService.checkOwner(req.app.get('db'), desiredPage)
             .then(result => {
 

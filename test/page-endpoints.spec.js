@@ -129,6 +129,13 @@ describe('Pages Endpoints', function() {
         .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
         .expect(404);
     });
+
+    it('returns 400 bad request if id is not a number', () => {
+      return supertest(app)
+        .get('/api/pages/aaa')
+        .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+        .expect(400, {error: 'Page id must be a number'});
+    });
   });
 
   describe('DELETE /api/pages/:page_id', () => {
@@ -145,6 +152,7 @@ describe('Pages Endpoints', function() {
         .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
         .expect(404);
     });
+
   });
 
   describe('PATCH /api/pages/:page_id', () => {
