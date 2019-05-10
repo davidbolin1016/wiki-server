@@ -1,4 +1,5 @@
 'use strict';
+// create links to other pages when text on submitted content matches title of other page
 
 const LinkService = {
   createLinks(content, otherPage) {
@@ -11,6 +12,7 @@ const LinkService = {
       return content;
     }
 
+    // do not create a link if we match part of a word
     const exclusions = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ<>';
     const name = otherPage.page_name;
     const index = content.toLowerCase().indexOf(otherPage.page_name.toLowerCase());
